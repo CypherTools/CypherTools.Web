@@ -1,0 +1,22 @@
+﻿<h3>Abilities</h3>
+<div>
+    @foreach (var ability in characterAbilities)
+    {
+        <CypherTools.Web.Client.Components.Character.CharacterAbilities characterAbility="ability" abilityRemoveCallback="Remove"></CypherTools.Web.Client.Components.Character.CharacterAbilities>
+    }
+    <button @onclick="AddAbility">Add Abiility</button>
+</div>
+@code {
+    [Parameter]
+    public List<CypherTools.Core.Models.CharacterAbility> characterAbilities { get; set; }
+
+    private void Remove(CypherTools.Core.Models.CharacterAbility AbilityToRemove)
+    {
+        characterAbilities.Remove(AbilityToRemove);
+    }
+
+    private void AddAbility()
+    {
+        characterAbilities.Add(new Core.Models.CharacterAbility { Name = "New Ability" });
+    }
+}

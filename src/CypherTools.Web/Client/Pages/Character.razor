@@ -1,0 +1,88 @@
+﻿@page "/character"
+@page "/character/{id:int}"
+@using System.Net.Http
+@inject HttpClient Http
+@inject IAccessTokenProvider AuthenticationService
+@inject NavigationManager Navigation
+@attribute [Authorize]
+
+<h2>Character</h2>
+
+@if (character == null)
+{
+    <span>Loading</span>
+}
+else
+{
+    <button @onclick="SaveCharacter">Save</button>
+    <input @bind="character.Name" />
+
+
+    <CypherTools.Web.Client.Components.Character.CharacterPool characterPools="character.Pools"></CypherTools.Web.Client.Components.Character.CharacterPool>
+    <br />
+    <CypherTools.Web.Client.Components.Character.CharacterRecoveryRolls characterRecoveryRolls="character.RecoveryRolls"></CypherTools.Web.Client.Components.Character.CharacterRecoveryRolls>
+    <br />
+    <CypherTools.Web.Client.Components.Character.CharacterInventory inventories="character.Inventory" characterId="character.CharacterId"></CypherTools.Web.Client.Components.Character.CharacterInventory>
+    <br />
+    <CypherTools.Web.Client.Components.Character.CharacterAbilityList characterAbilities="character.Abilities"></CypherTools.Web.Client.Components.Character.CharacterAbilityList>
+    <br />
+    <CypherTools.Web.Client.Components.Character.CharacterCypherList characterCyphers="character.Cyphers"></CypherTools.Web.Client.Components.Character.CharacterCypherList>
+    <br />
+    <CypherTools.Web.Client.Components.Character.CypherCharacterArtifactList characterArtifacts="character.Artifacts"></CypherTools.Web.Client.Components.Character.CypherCharacterArtifactList>
+    <br />
+
+
+}
+
+
+@code {
+    [Parameter]
+    public int id { get; set; } = 0;
+
+    private CypherTools.Core.Models.Character character;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id == 0)
+        {
+            character = new Core.Models.Character();
+            character.Name = "New Character";
+
+            character.Pools.Add(new Core.Models.CharacterPool { Name = "Might", PoolIndex = 0, PoolMax = 10 });
+            character.Pools.Add(new Core.Models.CharacterPool { Name = "Speed", PoolIndex = 1, PoolMax = 10 });
+            character.Pools.Add(new Core.Models.CharacterPool { Name = "Intellect", PoolIndex = 2, PoolMax = 10 });
+
+            character.RecoveryRolls.Add(new Core.Models.CharacterRecoveryRoll { RollName = "1 Action" });
+            character.RecoveryRolls.Add(new Core.Models.CharacterRecoveryRoll { RollName = "10 Minutes" });
+            character.RecoveryRolls.Add(new Core.Models.CharacterRecoveryRoll { RollName = "1 Hour" });
+            character.RecoveryRolls.Add(new Core.Models.CharacterRecoveryRoll { RollName = "10 Hours" });
+
+            character.RecoveryDie = 6;
+            character.RecoveryMod = 1;
+        }
+        else
+        {
+            try
+            {
+                character = await Http.GetFromJsonAsync<CypherTools.Core.Models.Character>($"api/Character/{id}");
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+
+        }
+    }
+
+    private async Task SaveCharacter()
+    {
+        if (character.CharacterId == 0)
+        {
+            await Http.PostAsJsonAsync<CypherTools.Core.Models.Character>($"api/Character/", character);
+        }
+        else
+        {
+            await Http.PutAsJsonAsync<CypherTools.Core.Models.Character>($"api/Character/{id}", character);
+        }
+    }
+}

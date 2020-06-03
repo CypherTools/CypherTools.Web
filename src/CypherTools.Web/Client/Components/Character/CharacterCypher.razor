@@ -1,0 +1,117 @@
+﻿<div>
+
+    @if (!showDetail)
+    {
+        <button @onclick="ToggleDetails">Show Details</button>
+        <span>@cypher.Name, Level: @cypher.Level</span>
+    }
+    else
+    {
+        <button @onclick="ToggleDetails">Hide Details</button>
+        <button @onclick="ToggleEdit">Toggle Edit</button>
+        <button @onclick="Remove">X</button>
+        @if (isEditing)
+        {
+            <div>
+                <BFUTextField Label="Name" @bind-Value="cypher.Name" @bind-Value:event="OnChange"></BFUTextField>
+            </div>
+            <div>
+                <label>
+                    Level:
+                    <input @bind="cypher.Level" />
+                </label>
+            </div>
+            <div>
+                <BFUTextField Label="Form" @bind-Value="@cypher.Form" @bind-Value:event="OnChange"></BFUTextField>
+            </div>
+            <div>
+                <BFUTextField Label="Effect" @bind-Value=@cypher.Effect @bind-Value:event="OnChange" AutoAdjustHeight="true" Multiline="true"></BFUTextField>
+            </div>
+            @if (!string.IsNullOrEmpty(cypher.EffectOption))
+            {
+                <div>
+                    <label>
+                        Effect Option:
+                        <input @bind="cypher.EffectOption" />
+                    </label>
+                </div>
+            }
+            <div>
+                <label>
+                    Source:
+                    <input @bind="cypher.Source" />
+                </label>
+            </div>
+        }
+        else
+        {
+            <div>
+                <label>
+                    Name:
+                </label>
+                <span>@cypher.Name</span>
+            </div>
+            <div>
+                <label>
+                    Level:
+                </label>
+                <span>@cypher.Level</span>
+            </div>
+            <div>
+                <label>
+                    Form:
+                </label>
+                <span>@cypher.Form</span>
+            </div>
+            <div>
+                <label>
+                    Effect:
+                </label>
+                <span style="white-space: pre-line;">
+                    @cypher.Effect
+                </span>
+            </div>
+            @if (!string.IsNullOrEmpty(cypher.EffectOption))
+            {
+                <div>
+                    <label>
+                        Effect Option:
+                    </label>
+                    <span>@cypher.EffectOption</span>
+                </div>
+            }
+            <div>
+                <label>
+                    Source:
+                </label>
+                <span>@cypher.Source</span>
+            </div>
+        }
+    }
+
+
+</div>
+
+@code {
+    [Parameter]
+    public CypherTools.Core.Models.CharacterCypher cypher { get; set; }
+
+    [Parameter]
+    public EventCallback<CypherTools.Core.Models.CharacterCypher> RemoveCallBack { get; set; }
+
+    private bool showDetail = false;
+    private bool isEditing = false;
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing;
+    }
+    private void ToggleDetails()
+    {
+        showDetail = !showDetail;
+    }
+    private async Task Remove()
+    {
+        await RemoveCallBack.InvokeAsync(cypher);
+    }
+}

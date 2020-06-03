@@ -1,0 +1,26 @@
+﻿<h3>Cyphers</h3>
+<div>
+    @foreach (var cypher in characterCyphers)
+    {
+        <CypherTools.Web.Client.Components.Character.CharacterCypher cypher="cypher" RemoveCallBack="RemoveCypher"></CypherTools.Web.Client.Components.Character.CharacterCypher>
+    }
+
+    <button @onclick="AddCypher">Add Cypher</button>
+</div>
+
+@code {
+    [Parameter]
+    public List<CypherTools.Core.Models.CharacterCypher> characterCyphers { get; set; }
+
+    private bool isHidden = false;
+
+    private void AddCypher()
+    {
+        characterCyphers.Add(new Core.Models.CharacterCypher() { Name = "New Cypher" });
+    }
+
+    private void RemoveCypher(CypherTools.Core.Models.CharacterCypher cypherToRemove)
+    {
+        characterCyphers.Remove(cypherToRemove);
+    }
+}

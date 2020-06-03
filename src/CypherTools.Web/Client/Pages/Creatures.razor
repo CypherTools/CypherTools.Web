@@ -1,0 +1,111 @@
+﻿@page "/creature"
+@page "/creature/{id:int}"
+@using System.Net.Http
+@inject HttpClient Http
+@attribute [Authorize]
+
+<h3>Creature</h3>
+
+@if (creature == null)
+{
+    <span>Loading</span>
+}
+else
+{
+    <button @onclick="SaveCreature">Save</button>
+    <div>
+        <BFUTextField Label="Name:" @bind-Value="@creature.Use" @bind-Value:event="OnChange"></BFUTextField>
+    </div>
+    <div>
+        <label>
+            Level:
+            <input @bind="creature.Level" />
+        </label>
+    </div>
+    <div>
+        <BFUTextField Label="Motive:" @bind-Value="@creature.Motive" @bind-Value:event="OnChange"></BFUTextField>
+    </div>
+    <div>
+        <BFUTextField Label="Environment:" @bind-Value="@creature.Environment" @bind-Value:event="OnChange"></BFUTextField>
+    </div>
+    <div>
+        <label>
+            Health:
+            <input @bind="creature.Health" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Damage Inflicted:
+            <input @bind="creature.DamageInflicted" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Armor:
+            <input @bind="creature.Armor" />
+        </label>
+    </div>
+    <div>
+        <BFUTextField Label="Movement:" AutoAdjustHeight="true" @bind-Value="@creature.Movement" @bind-Value:event="OnChange" Multiline="true"></BFUTextField>
+    </div>
+    <div>
+        <BFUTextField Label="Modifications:" AutoAdjustHeight="true" @bind-Value="@creature.Modifications" @bind-Value:event="OnChange" Multiline="true"></BFUTextField>
+    </div>
+    <div>
+        <BFUTextField Label="Combat:" AutoAdjustHeight="true" @bind-Value="@creature.Combat" @bind-Value:event="OnChange" Multiline="true"></BFUTextField>
+    </div>
+    <div>
+        <BFUTextField Label="Interaction:" AutoAdjustHeight="true" @bind-Value="@creature.Interaction" @bind-Value:event="OnChange" Multiline="true"></BFUTextField>
+    </div>
+    <div>
+        <BFUTextField Label="Use:" AutoAdjustHeight="true" @bind-Value="@creature.Use" @bind-Value:event="OnChange" Multiline="true"></BFUTextField>
+    </div>
+    <div>
+        <BFUTextField Label="GM Intrusions:" AutoAdjustHeight="true" @bind-Value="@creature.GMIntrusions" @bind-Value:event="OnChange" Multiline="true"></BFUTextField>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int id { get; set; } = 0;
+
+    private CypherTools.Core.Models.Creature creature;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id == 0)
+        {
+            creature = new Core.Models.Creature();
+            creature.Name = "New Character";
+        }
+        else
+        {
+            Console.WriteLine("Got here");
+            try
+            {
+                creature = await Http.GetFromJsonAsync<CypherTools.Core.Models.Creature>($"api/Creatures/{id}");
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+
+        }
+    }
+
+    private async Task SaveCreature()
+    {
+        if (creature.CreatureId == 0)
+        {
+            var newCreature = await Http.PostAsJsonAsync<CypherTools.Core.Models.Creature>($"api/Creatures", creature);
+            creature.CreatureId = Newtonsoft.Json.JsonConvert.DeserializeObject<CypherTools.Core.Models.Creature>(await newCreature.Content.ReadAsStringAsync()).CreatureId;
+        }
+        else
+        {
+            await Http.PutAsJsonAsync<CypherTools.Core.Models.Creature>($"api/Creatures/{id}", creature);
+        }
+
+    }
+}

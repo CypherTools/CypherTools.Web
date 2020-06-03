@@ -1,0 +1,22 @@
+﻿<h3>Artifacts</h3>
+<div>
+    @foreach (var artifact in characterArtifacts)
+    {
+        <CypherTools.Web.Client.Components.Character.CypherCharacterArtifact Artifact="artifact" removeCallback="Remove"></CypherTools.Web.Client.Components.Character.CypherCharacterArtifact>
+    }
+    <button @onclick="AddArtifact">Add Artifact</button>
+</div>
+@code {
+    [Parameter]
+    public List<CypherTools.Core.Models.CharacterArtifact> characterArtifacts { get; set; }
+
+    private void Remove(CypherTools.Core.Models.CharacterArtifact artifactToRemove)
+    {
+        characterArtifacts.Remove(artifactToRemove);
+    }
+    private void AddArtifact()
+    {
+        characterArtifacts.Add(new Core.Models.CharacterArtifact() { Name = "New Cypher" });
+    }
+
+}

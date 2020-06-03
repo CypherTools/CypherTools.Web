@@ -1,0 +1,44 @@
+﻿@page "/characters"
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager navManager
+@attribute [Authorize]
+
+<h3>Characters</h3>
+
+@if (characters == null)
+{
+    <span>Loading</span>
+}
+else
+{
+    <ul>
+        @foreach (var c in characters)
+        {
+            <li>
+                <BFUActionButton @onclick="()=> GotoCharacter(c.CharacterId)">@c.Name</BFUActionButton>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    List<CypherTools.Core.Models.Character> characters = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            characters = await Http.GetFromJsonAsync<List<CypherTools.Core.Models.Character>>($"api/character/UserCharacters");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    private void GotoCharacter(int charId)
+    {
+        navManager.NavigateTo($"character/{charId}");
+    }
+}

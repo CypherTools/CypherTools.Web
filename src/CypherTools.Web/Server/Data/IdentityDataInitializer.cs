@@ -19,7 +19,8 @@ namespace CypherTools.Web.Server.Data
         {
             var adminAccount = Environment.GetEnvironmentVariable("CypherToolsWebAdminAccount");
             var adminAccountPassword = Environment.GetEnvironmentVariable("CypherToolsWebAdminPassword");
-            if (userManager.FindByNameAsync(adminAccount) == null)
+
+            if (userManager.FindByNameAsync(adminAccount).Result == null)
             {
                 ApplicationUser user = new ApplicationUser
                 {
@@ -34,6 +35,7 @@ namespace CypherTools.Web.Server.Data
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, "Administrator");
+                    await userManager.AddToRoleAsync(user, "GM");
                 }
             }
         }

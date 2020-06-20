@@ -1,0 +1,60 @@
+﻿@page
+@model CypherTools.Web.Server.Areas.Identity.Pages.Account.ManagePlayersModel
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<a href="/">Home</a>
+<a href="/Identity/Account/createuser">Create Users</a>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h4>Update Existing Accounts.</h4>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <table class="">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Discord Id (Enter DELETE to delete player)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Players.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <label>@(Model.Players[i].Email)</label>
+                                <input type="hidden" asp-for="Players[i].Email" />
+                            </td>
+                            <td>
+                                <input asp-for="Players[i].DiscordID" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @*<div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.ConfirmPassword"></label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>*@
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>

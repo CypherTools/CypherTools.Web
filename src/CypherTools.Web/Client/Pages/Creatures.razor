@@ -1,0 +1,51 @@
+﻿@page "/creatures"
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager navManager
+@attribute [Authorize]
+
+<h3>Creatures</h3>
+
+@if (creatures == null)
+{
+    <span>Loading</span>
+}
+else
+{
+    <div>
+        <BFUActionButton @onclick="()=> GotoCreature(0)"><span class="oi oi-plus" aria-hidden="true"></span>Add New Creature</BFUActionButton>
+    </div>
+
+    <ul>
+        @foreach (var c in creatures)
+        {
+            <li>
+                <BFUActionButton @onclick="()=> GotoCreature(c.CreatureId)">@c.Name</BFUActionButton>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    List<CypherTools.Core.Models.Creature> creatures = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            creatures = await Http.GetFromJsonAsync<List<CypherTools.Core.Models.Creature>>($"api/creatures");
+
+            creatures.First().CreatureId = 1;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    private void GotoCreature(int charId)
+    {
+        navManager.NavigateTo($"creature/{charId}");
+    }
+}
+

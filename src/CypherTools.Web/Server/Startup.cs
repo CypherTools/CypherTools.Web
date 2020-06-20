@@ -18,6 +18,7 @@ using CypherTools.Core.DataAccess.Repos;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CypherTools.Web.Server
 {
@@ -39,12 +40,20 @@ namespace CypherTools.Web.Server
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Environment.GetEnvironmentVariable("postgresIdentityConnectionString")));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+                {
+                    options.IdentityResources["openid"].UserClaims.Add("name");
+                    options.ApiResources.Single().UserClaims.Add("name");
+                    options.IdentityResources["openid"].UserClaims.Add("role");
+                    options.ApiResources.Single().UserClaims.Add("role");
+                });
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role");
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

@@ -1,0 +1,48 @@
+﻿@page "/cyphers"
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager navManager
+
+
+<h3>Cyphers</h3>
+
+@if (cyphers == null)
+{
+    <span>Loading</span>
+}
+else
+{
+    <div>
+        <BFUActionButton @onclick="()=> GotoCypher(0)"><span class="oi oi-plus" aria-hidden="true"></span>Add New Cypher</BFUActionButton>
+    </div>
+    <ul>
+        @foreach (var c in cyphers)
+        {
+            <li>
+                <BFUActionButton @onclick="()=> GotoCypher(c.CypherId)">@c.Name</BFUActionButton>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    List<CypherTools.Core.Models.Cypher> cyphers = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            cyphers = await Http.GetFromJsonAsync<List<CypherTools.Core.Models.Cypher>>($"api/cyphers");
+            cyphers = cyphers.OrderBy(x => x.CypherId).ToList();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    private void GotoCypher(int charId)
+    {
+        navManager.NavigateTo($"cypher/{charId}");
+    }
+}

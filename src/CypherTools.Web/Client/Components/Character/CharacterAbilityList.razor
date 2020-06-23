@@ -8,7 +8,7 @@
 </div>
 @code {
     [Parameter]
-    public List<CypherTools.Core.Models.CharacterAbility> characterAbilities { get; set; }
+    public IList<CypherTools.Core.Models.CharacterAbility> characterAbilities { get; set; }
 
     private void Remove(CypherTools.Core.Models.CharacterAbility AbilityToRemove)
     {

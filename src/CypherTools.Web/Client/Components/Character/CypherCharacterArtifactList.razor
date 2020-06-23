@@ -8,7 +8,7 @@
 </div>
 @code {
     [Parameter]
-    public List<CypherTools.Core.Models.CharacterArtifact> characterArtifacts { get; set; }
+    public IList<CypherTools.Core.Models.CharacterArtifact> characterArtifacts { get; set; }
 
     private void Remove(CypherTools.Core.Models.CharacterArtifact artifactToRemove)
     {
